@@ -41,10 +41,10 @@ public class CategoriesFragment extends Fragment {
 
         lvCategories = view.findViewById(R.id.listViewCategories);
 
-        // جلب قائمة التصنيفات
+
         categoryList = DummyData.getCategories();
 
-        // إنشاء Adapter مع تخصيص لون النص إلى الأبيض
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_list_item_1,
@@ -56,7 +56,7 @@ public class CategoriesFragment extends Fragment {
                 View itemView = super.getView(position, convertView, parent);
                 TextView textView = itemView.findViewById(android.R.id.text1);
                 if (textView != null) {
-                    textView.setTextColor(Color.WHITE); // جعل لون النص أبيض
+                    textView.setTextColor(Color.WHITE);
                     textView.setTextSize(18);
                     textView.setPadding(16, 24, 16, 24);
                 }

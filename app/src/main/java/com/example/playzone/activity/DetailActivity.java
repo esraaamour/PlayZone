@@ -60,7 +60,6 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         if (txtCategory != null) {
-            // إذا كان موديل Game يمتلك getCategory()
             txtCategory.setText(game.getCategory());
         }
 
