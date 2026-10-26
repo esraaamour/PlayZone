@@ -1,10 +1,12 @@
 package com.example.playzone.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +19,16 @@ import com.example.playzone.activity.DetailActivity;
 import com.example.playzone.adapter.GameAdapter;
 import com.example.playzone.model.Game;
 import com.example.playzone.utils.DummyData;
+import androidx.appcompat.widget.SearchView;
+import java.util.ArrayList;
+
 
 import java.util.List;
 
 public class HomeFragment extends Fragment implements GameAdapter.OnGameClickListener {
 
     private RecyclerView rvGames;
+    private SearchView searchView;
     private GameAdapter adapter;
     private List<Game> gameList;
 
@@ -53,6 +59,23 @@ public class HomeFragment extends Fragment implements GameAdapter.OnGameClickLis
         // 4. Set GridLayoutManager (2 columns) and set adapter
         rvGames.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvGames.setAdapter(adapter);
+
+        searchView = view.findViewById(R.id.searchView);
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(Color.WHITE);
+        searchEditText.setHintTextColor(Color.GRAY);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterGames(newText);
+                return true;
+            }
+        });
     }
 
     // 5. Handle item clicks to navigate to DetailActivity
@@ -61,5 +84,17 @@ public class HomeFragment extends Fragment implements GameAdapter.OnGameClickLis
         Intent intent = new Intent(getActivity(), DetailActivity.class);
         intent.putExtra("selected_game", game);
         startActivity(intent);
+    }
+    private void filterGames(String query) {
+        List<Game> filtered = new ArrayList<>();
+        String search = query.trim().toLowerCase();
+
+        for (Game game : gameList) {
+            if (game.getTitle().toLowerCase().contains(search)
+                    || game.getCategory().toLowerCase().contains(search)) {
+                filtered.add(game);
+            }
+        }
+        adapter.updateList(filtered);
     }
 }

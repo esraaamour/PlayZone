@@ -11,10 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.playzone.R;
 import com.example.playzone.model.Game;
+import com.example.playzone.utils.CartManager;
+
+import java.util.Locale;
 
 // Game details screen displayed when clicking on a card
 public class DetailActivity extends AppCompatActivity {
 
+    private Game selectedGame;
     private ImageView imgGame;
     private TextView txtTitle, txtCategory, txtPrice, txtDescription;
     private Button btnAddToCart;
@@ -27,10 +31,11 @@ public class DetailActivity extends AppCompatActivity {
         initViews();
 
         if (getIntent() != null && getIntent().hasExtra("selected_game")) {
-            Game game = (Game) getIntent().getSerializableExtra("selected_game");
+            // ✅ تخزين اللعبة في المتغير العام selectedGame بدلاً من متغير محلي
+            selectedGame = (Game) getIntent().getSerializableExtra("selected_game");
 
-            if (game != null) {
-                displayGameDetails(game);
+            if (selectedGame != null) {
+                displayGameDetails(selectedGame);
             }
         }
 
@@ -38,14 +43,21 @@ public class DetailActivity extends AppCompatActivity {
             btnAddToCart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(DetailActivity.this, "The game has been added to the cart!", Toast.LENGTH_SHORT).show();
+                    if (selectedGame != null) {
+                        // ✅ إضافة اللعبة المحددة للسلة
+                        CartManager.getInstance().addGame(selectedGame);
+
+                        Toast.makeText(DetailActivity.this, "The game has been added to the cart!", Toast.LENGTH_SHORT).show();
+                        finish(); // إغلاق الشاشة والعودة للرئيسية
+                    } else {
+                        Toast.makeText(DetailActivity.this, "Error: Game data is null!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
     }
 
     private void initViews() {
-        // مطابقة كاملة مع الـ IDs في ملف activity_detail.xml
         imgGame = findViewById(R.id.imgGameCoverDetail);
         txtTitle = findViewById(R.id.txtGameTitleDetail);
         txtCategory = findViewById(R.id.txtGameCategoryDetail);
@@ -64,8 +76,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         if (txtPrice != null) {
-            txtPrice.setText("$" + game.getPrice());
-        }
+            txtPrice.setText(String.format(Locale.US, "$%.2f", game.getPrice()));        }
 
         if (txtDescription != null) {
             txtDescription.setText(game.getDescription());

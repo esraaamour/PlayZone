@@ -14,6 +14,8 @@ import com.example.playzone.R;
 import com.example.playzone.model.Game;
 
 import java.util.List;
+import java.util.Locale;
+
 // Adapter responsible for displaying the list of games inside the RecyclerView
 public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder> {
 
@@ -51,7 +53,10 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
     public int getItemCount() {
         return gameList != null ? gameList.size() : 0;
     }
-
+    public void updateList(List<Game> newList) {
+        this.gameList = newList;
+        notifyDataSetChanged();
+    }
     // ViewHolder that holds the views of each game card
     public static class GameViewHolder extends RecyclerView.ViewHolder {
 
@@ -62,7 +67,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
 
         public GameViewHolder(@NonNull View itemView) {
             super(itemView);
-// Initializes the views inside the game card layout
+        // Initializes the views inside the game card layout
             imgGame = itemView.findViewById(R.id.imgGameCover);
             txtTitle = itemView.findViewById(R.id.txtTitle);
             txtCategory = itemView.findViewById(R.id.txtCategoriesTitle);
@@ -72,7 +77,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
         public void bind(final Game game, final OnGameClickListener listener) {
             txtTitle.setText(game.getTitle());
             txtCategory.setText(game.getCategory());
-            txtPrice.setText("$" + game.getPrice());
+            txtPrice.setText(String.format(Locale.US, "$%.2f", game.getPrice()));
             imgGame.setImageResource(game.getImageResId());
             // Sets a click listener for the game card
             itemView.setOnClickListener(new View.OnClickListener() {

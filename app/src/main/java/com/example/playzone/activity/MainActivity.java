@@ -1,22 +1,19 @@
 package com.example.playzone.activity;
 
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import com.example.playzone.R;
-
-// Contains an ActionBar and BottomNavigationView / TabLayout with a FrameLayout for Fragments
-
-import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.playzone.R;
 import com.example.playzone.fragment.CartFragment;
 import com.example.playzone.fragment.CategoriesFragment;
 import com.example.playzone.fragment.HomeFragment;
+import com.example.playzone.utils.CartManager;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -29,15 +26,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 1. Initialize BottomNavigationView from layout
+        // Initialize BottomNavigationView from layout
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // 2. Set default fragment on initial launch (HomeFragment)
+        // set default fragment on initial launch (HomeFragment)
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
         }
 
-        // 3. Set listener for bottom navigation item selection
+        // Set listener for bottom navigation item selection
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -61,11 +58,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // جلب العدد الفعلي المخزن داخل CartManager وتحديث العداد عند كل ظهور للشاشة
+        int currentCount = CartManager.getInstance().getCartCount();
+        updateCartBadge(currentCount);
+    }
+
     // Helper method to handle fragment transactions smoothly
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    public void updateCartBadge(int count) {
+        if (bottomNavigationView != null) {
+            BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.nav_cart);
+            if (count > 0) {
+                badgeDrawable.setVisible(true);
+                badgeDrawable.setNumber(count);
+                badgeDrawable.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                badgeDrawable.setBadgeTextColor(ContextCompat.getColor(this, android.R.color.white));
+            } else {
+                badgeDrawable.setVisible(false);
+            }
+        }
     }
 }

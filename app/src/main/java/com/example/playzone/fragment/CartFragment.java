@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.playzone.R;
 import com.example.playzone.adapter.GameAdapter;
 import com.example.playzone.model.Game;
-import com.example.playzone.utils.DummyData;
+import com.example.playzone.utils.CartManager;
 
 import java.util.List;
 
@@ -49,8 +49,8 @@ public class CartFragment extends Fragment implements GameAdapter.OnGameClickLis
         txtTotalPrice = view.findViewById(R.id.txtTotalPrice);
         btnCheckout = view.findViewById(R.id.btnCheckout);
 
-        // 2. Load dummy data for cart items
-        cartList = DummyData.getDummyGames();
+        // 2. Load data for cart items
+        cartList = CartManager.getInstance().getCartList();
 
         // 3. Setup RecyclerView and Adapter
         adapter = new GameAdapter(cartList, this);
