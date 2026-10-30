@@ -1,5 +1,9 @@
 package com.example.playzone.fragment;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,6 +72,64 @@ public class CartFragment extends Fragment implements GameAdapter.OnGameClickLis
                 Toast.makeText(getContext(), "Checkout completed successfully!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Swipe left or right to remove an item from the cart
+        ItemTouchHelper.SimpleCallback swipeCallback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        int position = viewHolder.getBindingAdapterPosition();
+                        if (position == RecyclerView.NO_POSITION) return;
+
+                        Game removedGame = cartList.get(position);
+                        CartManager.getInstance().removeGame(removedGame);
+                        adapter.notifyItemRemoved(position);
+                        calculateTotal();
+
+                        Toast.makeText(getContext(),
+                                removedGame.getTitle() + " removed from cart",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                            @NonNull RecyclerView.ViewHolder viewHolder,
+                                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                        View itemView = viewHolder.itemView;
+
+                        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX != 0) {
+                            Paint paint = new Paint();
+                            paint.setColor(Color.parseColor("#D32F2F")); // red
+
+                            // Draw the red rectangle in the area uncovered by the swipe
+                            float radius = 12 * recyclerView.getContext().getResources().getDisplayMetrics().density; // 12dp to px
+
+                            RectF background;
+                            if (dX > 0) { // swiping right
+                                background = new RectF(itemView.getLeft(), itemView.getTop(),
+                                        itemView.getLeft() + dX + radius, itemView.getBottom());
+                            } else { // swiping left
+                                background = new RectF(itemView.getRight() + dX - radius, itemView.getTop(),
+                                        itemView.getRight(), itemView.getBottom());
+                            }
+                            c.drawRoundRect(background, radius, radius, paint);
+                        }
+
+                        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                    }
+                };
+        new ItemTouchHelper(swipeCallback).attachToRecyclerView(rvCartItems);
+
+
     }
 
     // Helper method to calculate the total price dynamically

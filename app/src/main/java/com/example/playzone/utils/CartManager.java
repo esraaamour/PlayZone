@@ -27,6 +27,8 @@ public class CartManager {
         cartList.add(game);
     }
 
+    public void removeGame(Game game){cartList.remove(game);}
+
     public List<Game> getCartList(){
         return cartList;
     }

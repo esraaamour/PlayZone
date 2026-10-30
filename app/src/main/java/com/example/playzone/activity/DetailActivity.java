@@ -31,7 +31,7 @@ public class DetailActivity extends AppCompatActivity {
         initViews();
 
         if (getIntent() != null && getIntent().hasExtra("selected_game")) {
-            // ✅ تخزين اللعبة في المتغير العام selectedGame بدلاً من متغير محلي
+            //  Store the game in the global selectedGame variable instead of a local variable
             selectedGame = (Game) getIntent().getSerializableExtra("selected_game");
 
             if (selectedGame != null) {
@@ -44,11 +44,11 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (selectedGame != null) {
-                        // ✅ إضافة اللعبة المحددة للسلة
+                        //  Add the selected game to the cart
                         CartManager.getInstance().addGame(selectedGame);
 
                         Toast.makeText(DetailActivity.this, "The game has been added to the cart!", Toast.LENGTH_SHORT).show();
-                        finish(); // إغلاق الشاشة والعودة للرئيسية
+                        finish();
                     } else {
                         Toast.makeText(DetailActivity.this, "Error: Game data is null!", Toast.LENGTH_SHORT).show();
                     }

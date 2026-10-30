@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // جلب العدد الفعلي المخزن داخل CartManager وتحديث العداد عند كل ظهور للشاشة
+        // Retrieve the actual count stored in CartManager and update the counter whenever the screen appears.
         int currentCount = CartManager.getInstance().getCartCount();
         updateCartBadge(currentCount);
     }
